@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Países - API Go + Gin</title>
+    <style>
+        /* Usa los mismos estilos tenues que en cities.html */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #f5f5f5 100%);
+            color: #4a4a4a;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+        }
+
+        nav {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 1rem;
+            color: #5dade2;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #1abc9c;
+        }
+
+        h1 {
+            color: #5dade2;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        input[type="text"] {
+            padding: 9px;
+            border: 1px solid #b2bec3;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f7fafc;
+            color: #4a4a4a;
+        }
+
+        .create-btn {
+            background: #aed6f1;
+            color: #34495e;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .create-btn:hover {
+            background: #85c1e9;
+            color: #222;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #d6eaf8;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #d6eaf8;
+            color: #34495e;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f4f8fb;
+        }
+    </style>
+</head>
+
+<body>
+  <div class="container">
+    <nav>
+      <a href="users.html">Usuarios</a>
+      <a href="countries.html">Países</a>
+      <a href="cities.html">Ciudades</a>
+    </nav>
+
+    <h1>Países</h1>
+
+    <form id="countryForm">
+      <input type="text" id="countryName" placeholder="Nombre del país" required />
+      <input type="text" id="countryISO" placeholder="Código ISO" maxlength="2" required />
+      <input type="text" id="countryFlag" placeholder="Bandera (emoji)" maxlength="2" required />
+      <button type="submit" class="create-btn">Agregar País</button>
+    </form>
+
+    <table id="countryTable" class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Código ISO</th>
+          <th>Bandera</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Aquí se insertarán los países desde JS -->
+      </tbody>
+    </table>
+
+    <!-- Modal para editar país -->
+    <div id="editCountryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); justify-content:center; align-items:center;">
+      <div style="background:#fff; padding:2rem; border-radius:12px; max-width:350px; margin:auto; position:relative;">
+        <span onclick="closeEditCountryModal()" style="position:absolute;top:10px;right:18px;cursor:pointer;font-size:22px;">&times;</span>
+        <h3 style="color:#5dade2;">Editar País</h3>
+        <form id="editCountryForm">
+          <input type="hidden" id="editCountryId" />
+          <input type="text" id="editCountryName" placeholder="Nombre del país" required />
+          <input type="text" id="editCountryISO" placeholder="Código ISO" maxlength="2" required />
+          <input type="text" id="editCountryFlag" placeholder="Bandera (emoji)" maxlength="2" required />
+          <button type="submit" class="create-btn">Guardar cambios</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function editCountry(id, name, iso_code, flag) {
+        document.getElementById('editCountryId').value = id;
+        document.getElementById('editCountryName').value = name;
+        document.getElementById('editCountryISO').value = iso_code;
+        document.getElementById('editCountryFlag').value = flag;
+        document.getElementById('editCountryModal').style.display = 'flex';
+      }
+
+      function closeEditCountryModal() {
+        document.getElementById('editCountryModal').style.display = 'none';
+      }
+
+      document.getElementById('countryForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('countryName').value;
+        const iso_code = document.getElementById('countryISO').value;
+        const flag = document.getElementById('countryFlag').value;
+        await fetch('http://localhost:8080/countries/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, iso_code, flag })
+        });
+        e.target.reset();
+        loadCountries();
+      });
+
+      document.getElementById('editCountryForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editCountryId').value;
+        const name = document.getElementById('editCountryName').value;
+        const iso_code = document.getElementById('editCountryISO').value;
+        const flag = document.getElementById('editCountryFlag').value;
+        await fetch(`http://localhost:8080/countries/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, iso_code, flag })
+        });
+        closeEditCountryModal();
+        loadCountries();
+      });
+
+      async function deleteCountry(id) {
+        if (confirm('¿Deseas eliminar este país?')) {
+          await fetch(`http://localhost:8080/countries/${id}`, { method: 'DELETE' });
+          loadCountries();
+        }
+      }
+
+      async function loadCountries() {
+        const res = await fetch('http://localhost:8080/countries/');
+        const data = await res.json();
+        const tbody = document.querySelector('#countryTable tbody');
+        tbody.innerHTML = '';
+        data.data.forEach(country => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${country.id}</td>
+              <td>${country.name}</td>
+              <td>${country.iso_code}</td>
+              <td>${country.flag}</td>
+              <td>
+                <button onclick="editCountry(${country.id}, '${country.name}', '${country.iso_code}', '${country.flag}')" class="create-btn">Editar</button>
+                <button onclick="deleteCountry(${country.id})" class="create-btn" style="background:#f8d7da;color:#a94442;">Eliminar</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      // Cargar países al iniciar
+      loadCountries();
+    </script>
+  </div>
+</body>

@@ -1,24 +1,31 @@
+// main.go (No necesita cambios si ya lo tienes así)
 package main
 
 import (
-	"go-gin-crud/config"
-	"go-gin-crud/models"
-	"go-gin-crud/routes"
-
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
+    "go-gin-crud/routes"
+    "go-gin-crud/config"
 )
 
 func main() {
-	r := gin.Default()
+    config.ConnectDatabase()
 
-	// Conexión y migración
-	config.ConnectDatabase()
-	config.DB.AutoMigrate(&models.User{})
 
-	
-	// Rutas
-	routes.UserRoutes(r)
+    SeedAllData(config.DB)
 
-	// Iniciar el servidor en el puerto 8080
-	r.Run(":8080")
+    r := gin.Default()
+    // Middleware CORS
+    r.Use(func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+        c.Next()
+    })
+
+    routes.SetupRoutes(r)
+    r.Run(":8080")
 }

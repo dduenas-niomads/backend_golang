@@ -3,341 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Usuarios - API Go + Gin</title>
+  <title>Bienvenido - API Go + Gin</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1abc9c 0%, #3498db 100%);
-      color: #34495e;
+      background: linear-gradient(135deg, #e0f7fa 0%, #f5f5f5 100%);
+      color: #4a4a4a;
       margin: 0;
       padding: 2rem;
     }
-
     .container {
-      max-width: 900px;
+      max-width: 600px;
       margin: auto;
-      background: white;
+      background: #fff;
       border-radius: 16px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.12);
+      box-shadow: 0 0 18px rgba(0,0,0,0.08);
       padding: 2.5rem 2rem;
-    }
-
-    h1 {
-      color: #1abc9c;
       text-align: center;
+    }
+    nav {
       margin-bottom: 2rem;
-      font-size: 2.5rem;
-      letter-spacing: 1px;
     }
-
-    .search-bar {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      justify-content: flex-end;
-    }
-
-    .search-bar input {
-      padding: 10px;
-      border: 1px solid #bdc3c7;
-      border-radius: 8px;
-      font-size: 1rem;
-      width: 220px;
-    }
-
-    .search-bar button {
-      background: #3498db;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .search-bar button:hover {
-      background: #217dbb;
-    }
-
-    form {
-      margin-bottom: 1.5rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-    }
-
-    input[type="text"], input[type="email"] {
-      padding: 10px;
-      border: 1px solid #bdc3c7;
-      border-radius: 8px;
-      flex: 1 1 200px;
-      font-size: 1rem;
-    }
-
-    .create-btn {
-      background: #1abc9c;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .create-btn:hover {
-      background: #159d81;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 1rem;
-      font-size: 1rem;
-    }
-
-    th, td {
-      border: 1px solid #bdc3c7;
-      padding: 12px;
-      text-align: left;
-    }
-
-    th {
-      background: #1abc9c;
-      color: white;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .edit-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 7px 14px;
-      margin-right: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .edit-btn:hover {
-      background: #217dbb;
-    }
-
-    .delete-btn {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 7px 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .delete-btn:hover {
-      background: #c0392b;
-    }
-
-    #pagination {
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-    #pagination button {
-      background: #ecf0f1;
-      color: #34495e;
-      border: none;
-      border-radius: 6px;
-      padding: 7px 14px;
-      margin: 0 3px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #pagination button.active,
-    #pagination button:hover {
-      background: #1abc9c;
-      color: white;
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      width: 400px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.18);
-      position: relative;
-    }
-
-    .modal-header {
+    nav a {
+      margin: 0 1rem;
+      color: #5dade2;
+      text-decoration: none;
       font-weight: bold;
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+    nav a:hover {
       color: #1abc9c;
-      text-align: center;
     }
-
-    .close {
-      position: absolute;
-      top: 18px;
-      right: 22px;
-      font-size: 22px;
-      cursor: pointer;
-      color: #e74c3c;
-      font-weight: bold;
+    h1 {
+      color: #5dade2;
+      margin-bottom: 1.5rem;
+      font-size: 2.2rem;
+    }
+    p {
+      font-size: 1.15rem;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Usuarios</h1>
-    <div class="search-bar">
-      <form id="searchForm">
-        <input type="text" id="search" placeholder="Buscar por nombre..." />
-        <button type="submit">Buscar</button>
-      </form>
-    </div>
-    <form id="userForm">
-      <input type="text" id="name" placeholder="Nombre" required />
-      <input type="email" id="email" placeholder="Correo electrónico" required />
-      <button type="submit" class="create-btn">Agregar</button>
-    </form>
-    <table id="userTable" class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Aquí se insertarán los usuarios desde JS -->
-      </tbody>
-    </table>
-    <div id="pagination"></div>
+    <nav>
+      <a href="users.html">Usuarios</a>
+      <a href="countries.html">Países</a>
+      <a href="cities.html">Ciudades</a>
+    </nav>
+    <h1>Bienvenido a tu API Go + Gin</h1>
+    <p>
+      Selecciona un módulo para gestionar usuarios, países o ciudades.<br>
+      Usa el menú superior para navegar entre las diferentes secciones.
+    </p>
+    <img src="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" alt="API" width="120" style="margin-top:1rem;opacity:0.8;">
   </div>
-
-  <!-- Modal -->
-  <div class="modal" id="editModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        Editar Usuario
-      </div>
-      <span class="close" onclick="closeModal()">&times;</span>
-      <form id="editForm">
-        <input type="hidden" id="edit-id" />
-        <input type="text" id="edit-name" placeholder="Nombre" required />
-        <input type="email" id="edit-email" placeholder="Correo electrónico" required />
-        <button type="submit" class="create-btn">Guardar cambios</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const baseUrl = 'http://localhost:8080/users/';
-    let currentPage = 1;
-    let currentSearch = '';
-
-    async function loadUsers(page = 1, search = '') {
-      currentPage = page;
-      currentSearch = search;
-
-      const response = await fetch(`${baseUrl}?page=${page}&limit=5&search=${search}`);
-      const res = await response.json();
-      const users = res.data;
-      const total = res.total;
-      const tbody = document.querySelector('#userTable tbody');
-      tbody.innerHTML = '';
-      users.forEach(u => {
-        const row = `
-          <tr>
-            <td>${u.id}</td>
-            <td>${u.name}</td>
-            <td>${u.email}</td>
-            <td>
-              <button class="edit-btn" onclick="openModal(${u.id}, '${u.name}', '${u.email}')">Editar</button>
-              <button class="delete-btn" onclick="deleteUser(${u.id})">Eliminar</button>
-            </td>
-          </tr>`;
-        tbody.innerHTML += row;
-      });
-
-      // Crear paginación
-      const pages = Math.ceil(total / 5);
-      const pagination = document.getElementById('pagination');
-      pagination.innerHTML = '';
-      for (let i = 1; i <= pages; i++) {
-        pagination.innerHTML += `<button onclick="loadUsers(${i}, '${search}')" class="${i === page ? 'active' : ''}">${i}</button>`;
-      }
-    }
-
-    document.getElementById('searchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const search = document.getElementById('search').value;
-      loadUsers(1, search);
-    });
-
-    document.getElementById('userForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      await fetch(baseUrl, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, email })
-      });
-      e.target.reset();
-      loadUsers(currentPage, currentSearch);
-    });
-
-    async function deleteUser(id) {
-      if (confirm('¿Deseas eliminar este usuario?')) {
-        await fetch(baseUrl + id, { method: 'DELETE' });
-        loadUsers(currentPage, currentSearch);
-      }
-    }
-
-    function openModal(id, name, email) {
-      document.getElementById('edit-id').value = id;
-      document.getElementById('edit-name').value = name;
-      document.getElementById('edit-email').value = email;
-      document.getElementById('editModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('editModal').style.display = 'none';
-    }
-
-    document.getElementById('editForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('edit-id').value;
-      const name = document.getElementById('edit-name').value;
-      const email = document.getElementById('edit-email').value;
-      await fetch(baseUrl + id, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, email })
-      });
-      closeModal();
-      loadUsers(currentPage, currentSearch);
-    });
-
-    // Cargar usuarios al iniciar
-    loadUsers();
-  </script>
 </body>
 </html>
