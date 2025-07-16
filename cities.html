@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ciudades - API Go + Gin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #f5f5f5 100%);
+            color: #4a4a4a;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+        }
+
+
+        nav {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 1rem;
+            color: #5dade2;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #1abc9c;
+        }
+
+        h1 {
+            color: #5dade2;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 9px;
+            border: 1px solid #b2bec3;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f7fafc;
+            color: #4a4a4a;
+        }
+
+        .create-btn {
+            background: #aed6f1;
+            color: #34495e;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .create-btn:hover {
+            background: #85c1e9;
+            color: #222;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #d6eaf8;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #d6eaf8;
+            color: #34495e;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f4f8fb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav>
+            <a href="indext.html">Inicio</a>
+            <a href="users.html">Usuarios</a>
+            <a href="countries.html">Países</a>
+            <a href="cities.html">Ciudades</a>
+        </nav>
+        <h1>Ciudades</h1>
+        <input type="text" id="searchCity" placeholder="Buscar ciudad..."
+            style="margin-bottom:1rem; padding:8px 14px; border-radius:8px; border:1px solid #b2bec3; font-size:1rem; width:100%; max-width:320px;">
+        <form id="cityForm">
+            <form id="cityForm">
+                <input type="text" id="cityName" placeholder="Nombre de la ciudad" required />
+                <select id="cityCountryId" required>
+                    <!-- Opciones generadas por JS -->
+                </select>
+                <button type="submit" class="create-btn">Agregar Ciudad</button>
+            </form>
+
+            <table id="cityTable" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>ID País</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se insertarán las ciudades desde JS -->
+                </tbody>
+            </table>
+            <div id="editCityModal"
+                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); justify-content:center; align-items:center;">
+                <div
+                    style="background:#fff; padding:2rem; border-radius:12px; max-width:350px; margin:auto; position:relative;">
+                    <span onclick="closeEditCityModal()"
+                        style="position:absolute;top:10px;right:18px;cursor:pointer;font-size:22px;">&times;</span>
+                    <h3 style="color:#5dade2;">Editar Ciudad</h3>
+                    <form id="editCityForm">
+                        <input type="hidden" id="editCityId" />
+                        <input type="text" id="editCityName" placeholder="Nombre de la ciudad" required />
+                        <select id="editCityCountryId" required>
+                            <!-- Opciones generadas por JS -->
+                        </select>
+                        <button type="submit" class="create-btn">Guardar cambios</button>
+                    </form>
+                </div>
+            </div>
+    </div>
+    <script>
+        let countriesList = [];
+
+        document.getElementById('searchCity').addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            document.querySelectorAll('#cityTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        });
+
+        async function fetchCountries() {
+            const res = await fetch('http://localhost:8080/countries/');
+            const data = await res.json();
+            countriesList = data.data;
+        }
+
+        function populateCountrySelect(selectId, selectedId = null) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="" disabled selected>Selecciona país</option>';
+            countriesList.forEach(country => {
+                select.innerHTML += `<option value="${country.id}" ${country.id == selectedId ? 'selected' : ''}>${country.name}</option>`;
+            });
+        }
+
+        function editCity(id, name, country_id) {
+            document.getElementById('editCityId').value = id;
+            document.getElementById('editCityName').value = name;
+            populateCountrySelect('editCityCountryId', country_id);
+            document.getElementById('editCityModal').style.display = 'flex';
+        }
+
+        function closeEditCityModal() {
+            document.getElementById('editCityModal').style.display = 'none';
+        }
+
+        document.getElementById('editCityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editCityId').value;
+            const name = document.getElementById('editCityName').value;
+            const country_id = document.getElementById('editCityCountryId').value;
+            await fetch(`http://localhost:8080/cities/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, country_id: Number(country_id) })
+            });
+            closeEditCityModal();
+            loadCities();
+        });
+
+        async function deleteCity(id) {
+            if (confirm('¿Deseas eliminar esta ciudad?')) {
+                await fetch(`http://localhost:8080/cities/${id}`, { method: 'DELETE' });
+                loadCities();
+            }
+        }
+
+
+
+        document.getElementById('cityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('cityName').value;
+            const country_id = document.getElementById('cityCountryId').value;
+            await fetch('http://localhost:8080/cities/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, country_id: Number(country_id) })
+            });
+            e.target.reset();
+            loadCities();
+        });
+
+        async function loadCities() {
+            console.log("Voy a hacer fetch de países");
+            await fetchCountries();
+            populateCountrySelect('cityCountryId');
+            console.log("Voy a hacer fetch de ciudades");
+            try {
+                const res = await fetch('http://localhost:8080/cities/');
+                if (!res.ok) throw new Error("Error en el fetch de ciudades");
+                const data = await res.json();
+                console.log("Ciudades recibidas:", data.data);
+                const tbody = document.querySelector('#cityTable tbody');
+                tbody.innerHTML = '';
+                data.data.forEach(city => {
+                    const countryName = countriesList.find(c => Number(c.id) === Number(city.country_id))?.name || city.country_id;
+                    tbody.innerHTML += `
+              <tr>
+                <td>${city.id}</td>
+                <td>${city.name}</td>
+                <td>${countryName}</td>
+                <td>
+                  <button onclick="editCity(${city.id}, '${city.name}', ${city.country_id})" class="create-btn">Editar</button>
+                  <button onclick="deleteCity(${city.id})" class="create-btn" style="background:#f8d7da;color:#a94442;">Eliminar</button>
+                </td>
+              </tr>
+            `;
+                });
+            } catch (err) {
+                console.error("Error cargando ciudades:", err);
+            }
+        }
+
+        // Cargar ciudades y países al iniciar
+        loadCities();
+    </script>
+    </div>
+</body>
