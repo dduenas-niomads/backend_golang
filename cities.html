@@ -23,6 +23,7 @@
             padding: 2rem;
         }
 
+
         nav {
             margin-bottom: 2rem;
             text-align: center;
@@ -114,128 +115,140 @@
 <body>
     <div class="container">
         <nav>
+            <a href="indext.html">Inicio</a>
             <a href="users.html">Usuarios</a>
             <a href="countries.html">Países</a>
             <a href="cities.html">Ciudades</a>
         </nav>
         <h1>Ciudades</h1>
+        <input type="text" id="searchCity" placeholder="Buscar ciudad..."
+            style="margin-bottom:1rem; padding:8px 14px; border-radius:8px; border:1px solid #b2bec3; font-size:1rem; width:100%; max-width:320px;">
         <form id="cityForm">
-    <input type="text" id="cityName" placeholder="Nombre de la ciudad" required />
-    <select id="cityCountryId" required>
-        <!-- Opciones generadas por JS -->
-    </select>
-    <button type="submit" class="create-btn">Agregar Ciudad</button>
-</form>
+            <form id="cityForm">
+                <input type="text" id="cityName" placeholder="Nombre de la ciudad" required />
+                <select id="cityCountryId" required>
+                    <!-- Opciones generadas por JS -->
+                </select>
+                <button type="submit" class="create-btn">Agregar Ciudad</button>
+            </form>
 
-        <table id="cityTable" class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>ID País</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aquí se insertarán las ciudades desde JS -->
-            </tbody>
-        </table>
-      <div id="editCityModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); justify-content:center; align-items:center;">
-    <div style="background:#fff; padding:2rem; border-radius:12px; max-width:350px; margin:auto; position:relative;">
-        <span onclick="closeEditCityModal()" style="position:absolute;top:10px;right:18px;cursor:pointer;font-size:22px;">&times;</span>
-        <h3 style="color:#5dade2;">Editar Ciudad</h3>
-        <form id="editCityForm">
-            <input type="hidden" id="editCityId" />
-            <input type="text" id="editCityName" placeholder="Nombre de la ciudad" required />
-            <select id="editCityCountryId" required>
-                <!-- Opciones generadas por JS -->
-            </select>
-            <button type="submit" class="create-btn">Guardar cambios</button>
-        </form>
-    </div>
-</div>
+            <table id="cityTable" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>ID País</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se insertarán las ciudades desde JS -->
+                </tbody>
+            </table>
+            <div id="editCityModal"
+                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); justify-content:center; align-items:center;">
+                <div
+                    style="background:#fff; padding:2rem; border-radius:12px; max-width:350px; margin:auto; position:relative;">
+                    <span onclick="closeEditCityModal()"
+                        style="position:absolute;top:10px;right:18px;cursor:pointer;font-size:22px;">&times;</span>
+                    <h3 style="color:#5dade2;">Editar Ciudad</h3>
+                    <form id="editCityForm">
+                        <input type="hidden" id="editCityId" />
+                        <input type="text" id="editCityName" placeholder="Nombre de la ciudad" required />
+                        <select id="editCityCountryId" required>
+                            <!-- Opciones generadas por JS -->
+                        </select>
+                        <button type="submit" class="create-btn">Guardar cambios</button>
+                    </form>
+                </div>
+            </div>
     </div>
     <script>
+        let countriesList = [];
 
-console.log("Script de ciudades cargado");
-       let countriesList = [];
+        document.getElementById('searchCity').addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            document.querySelectorAll('#cityTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        });
 
-async function fetchCountries() {
-    const res = await fetch('http://localhost:8080/countries/');
-    const data = await res.json();
-    countriesList = data.data;
-}
+        async function fetchCountries() {
+            const res = await fetch('http://localhost:8080/countries/');
+            const data = await res.json();
+            countriesList = data.data;
+        }
 
-function populateCountrySelect(selectId, selectedId = null) {
-    const select = document.getElementById(selectId);
-    select.innerHTML = '';
-    countriesList.forEach(country => {
-        select.innerHTML += `<option value="${country.id}" ${country.id == selectedId ? 'selected' : ''}>${country.name}</option>`;
-    });
-}
+        function populateCountrySelect(selectId, selectedId = null) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="" disabled selected>Selecciona país</option>';
+            countriesList.forEach(country => {
+                select.innerHTML += `<option value="${country.id}" ${country.id == selectedId ? 'selected' : ''}>${country.name}</option>`;
+            });
+        }
 
-function editCity(id, name, country_id) {
-    document.getElementById('editCityId').value = id;
-    document.getElementById('editCityName').value = name;
-    populateCountrySelect('editCityCountryId', country_id);
-    document.getElementById('editCityModal').style.display = 'flex';
-}
+        function editCity(id, name, country_id) {
+            document.getElementById('editCityId').value = id;
+            document.getElementById('editCityName').value = name;
+            populateCountrySelect('editCityCountryId', country_id);
+            document.getElementById('editCityModal').style.display = 'flex';
+        }
 
-function closeEditCityModal() {
-    document.getElementById('editCityModal').style.display = 'none';
-}
+        function closeEditCityModal() {
+            document.getElementById('editCityModal').style.display = 'none';
+        }
 
-document.getElementById('editCityForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editCityId').value;
-    const name = document.getElementById('editCityName').value;
-    const country_id = document.getElementById('editCityCountryId').value;
-    await fetch(`http://localhost:8080/cities/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, country_id: Number(country_id) })
-    });
-    closeEditCityModal();
-    loadCities();
-});
+        document.getElementById('editCityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editCityId').value;
+            const name = document.getElementById('editCityName').value;
+            const country_id = document.getElementById('editCityCountryId').value;
+            await fetch(`http://localhost:8080/cities/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, country_id: Number(country_id) })
+            });
+            closeEditCityModal();
+            loadCities();
+        });
 
-async function deleteCity(id) {
-    if (confirm('¿Deseas eliminar esta ciudad?')) {
-        await fetch(`http://localhost:8080/cities/${id}`, { method: 'DELETE' });
-        loadCities();
-    }
-}
+        async function deleteCity(id) {
+            if (confirm('¿Deseas eliminar esta ciudad?')) {
+                await fetch(`http://localhost:8080/cities/${id}`, { method: 'DELETE' });
+                loadCities();
+            }
+        }
 
 
 
-document.getElementById('cityForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('cityName').value;
-    const country_id = document.getElementById('cityCountryId').value;
-    await fetch('http://localhost:8080/cities/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, country_id: Number(country_id) })
-    });
-    e.target.reset();
-    loadCities();
-});
+        document.getElementById('cityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('cityName').value;
+            const country_id = document.getElementById('cityCountryId').value;
+            await fetch('http://localhost:8080/cities/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, country_id: Number(country_id) })
+            });
+            e.target.reset();
+            loadCities();
+        });
 
-async function loadCities() {
-    console.log("Voy a hacer fetch de países");
-    await fetchCountries();
-    populateCountrySelect('cityCountryId');
-    console.log("Voy a hacer fetch de ciudades");
-    try {
-        const res = await fetch('http://localhost:8080/cities/');
-        if (!res.ok) throw new Error("Error en el fetch de ciudades");
-        const data = await res.json();
-        console.log("Ciudades recibidas:", data.data);
-        const tbody = document.querySelector('#cityTable tbody');
-        tbody.innerHTML = '';
-        data.data.forEach(city => {
-            const countryName = countriesList.find(c => Number(c.id) === Number(city.country_id))?.name || city.country_id;
-            tbody.innerHTML += `
+        async function loadCities() {
+            console.log("Voy a hacer fetch de países");
+            await fetchCountries();
+            populateCountrySelect('cityCountryId');
+            console.log("Voy a hacer fetch de ciudades");
+            try {
+                const res = await fetch('http://localhost:8080/cities/');
+                if (!res.ok) throw new Error("Error en el fetch de ciudades");
+                const data = await res.json();
+                console.log("Ciudades recibidas:", data.data);
+                const tbody = document.querySelector('#cityTable tbody');
+                tbody.innerHTML = '';
+                data.data.forEach(city => {
+                    const countryName = countriesList.find(c => Number(c.id) === Number(city.country_id))?.name || city.country_id;
+                    tbody.innerHTML += `
               <tr>
                 <td>${city.id}</td>
                 <td>${city.name}</td>
@@ -246,14 +259,14 @@ async function loadCities() {
                 </td>
               </tr>
             `;
-        });
-    } catch (err) {
-        console.error("Error cargando ciudades:", err);
-    }
-}
+                });
+            } catch (err) {
+                console.error("Error cargando ciudades:", err);
+            }
+        }
 
-// Cargar ciudades y países al iniciar
-loadCities();
+        // Cargar ciudades y países al iniciar
+        loadCities();
     </script>
-  </div>
+    </div>
 </body>
