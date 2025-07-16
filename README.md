@@ -7,4 +7,4 @@ Este es un proyecto backend en Go.
 Clona el repositorio:
 ```bash
 git clone https://github.com/dduenas-niomads/backend_golang.git
-cd backend_golang
+

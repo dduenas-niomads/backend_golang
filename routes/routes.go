@@ -1,4 +1,5 @@
 package routes
+<<<<<<< HEAD
 
 import (
     "github.com/gin-gonic/gin"
@@ -40,3 +41,5 @@ func SetupRoutes(r *gin.Engine) {
         }
     }
 }
+=======
+>>>>>>> 9358fd8 (recambios)
