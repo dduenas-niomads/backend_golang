@@ -2,30 +2,41 @@
 package main
 
 import (
-    "github.com/gin-gonic/gin"
-    "go-gin-crud/routes"
-    "go-gin-crud/config"
+	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+
+	"backend_golang/database"
+	"backend_golang/routes"
 )
 
 func main() {
-    config.ConnectDatabase()
+	// Cargar variables de entorno
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error cargando archivo .env")
+	}
 
+	// Conectar a la base de datos
+	database.ConnectDB()
 
-    SeedAllData(config.DB)
+	// Iniciar Gin
+	router := gin.Default()
 
-    r := gin.Default()
-    // Middleware CORS
-    r.Use(func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
-        if c.Request.Method == "OPTIONS" {
-            c.AbortWithStatus(204)
-            return
-        }
-        c.Next()
-    })
+	// Configurar rutas
+	routes.RegisterRoutes(router)
 
-    routes.SetupRoutes(r)
-    r.Run(":8080")
+	// Puerto desde .env
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	// Iniciar servidor
+	err = router.Run(":" + port)
+	if err != nil {
+		log.Fatal("No se pudo iniciar el servidor")
+	}
 }
