@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"backend_golang/database"
+	"backend_golang/config"
 	"backend_golang/routes"
 )
 
@@ -20,13 +20,13 @@ func main() {
 	}
 
 	// Conectar a la base de datos
-	database.ConnectDB()
+	config.ConnectDatabase()
 
 	// Iniciar Gin
 	router := gin.Default()
 
 	// Configurar rutas
-	routes.RegisterRoutes(router)
+	routes.SetupRoutes(router)
 
 	// Puerto desde .env
 	port := os.Getenv("PORT")

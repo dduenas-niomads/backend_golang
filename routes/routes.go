@@ -2,7 +2,7 @@ package routes
 
 import (
     "github.com/gin-gonic/gin"
-    "go-gin-crud/controllers"
+    "backend_golang/controllers"
 )
 
 func SetupRoutes(r *gin.Engine) {

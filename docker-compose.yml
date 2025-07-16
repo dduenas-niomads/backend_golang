@@ -11,7 +11,7 @@ services:
       - ./:/app
     environment:
       - PORT=8080
-      - DATABASE_URL=/root/users.db   # Variable con ruta dentro del contenedor
+      - DATABASE_URL=/root/database/data.db   # Variable con ruta dentro del contenedor
 
     restart: unless-stopped
 
