@@ -74,9 +74,11 @@ var countries = []Country{
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Bienvenido a la API CRUD en Go + Fiber!")
-	})
+	storage.LoadCountriesFromFile()
+	routes.SetupRoutes(app)
+
+	log.Fatal(app.Listen(":3000"))
+}
 
 	// CRUD Usuarios
 	app.Post("/users", createUser)
