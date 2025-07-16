@@ -1,24 +1,41 @@
 package main
 
 import (
-	"go-gin-crud/config"
-	"go-gin-crud/models"
-	"go-gin-crud/routes"
+	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+
+	"backend_golang/database"
+	"backend_golang/routes"
 )
 
 func main() {
-	r := gin.Default()
+	// Cargar variables de entorno
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error cargando archivo .env")
+	}
 
-	// Conexión y migración
-	config.ConnectDatabase()
-	config.DB.AutoMigrate(&models.User{})
+	// Conectar a la base de datos
+	database.ConnectDB()
 
-	
-	// Rutas
-	routes.UserRoutes(r)
+	// Iniciar Gin
+	router := gin.Default()
 
-	// Iniciar el servidor en el puerto 8080
-	r.Run(":8080")
+	// Configurar rutas
+	routes.RegisterRoutes(router)
+
+	// Puerto desde .env
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	// Iniciar servidor
+	err = router.Run(":" + port)
+	if err != nil {
+		log.Fatal("No se pudo iniciar el servidor")
+	}
 }

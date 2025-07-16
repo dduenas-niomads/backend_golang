@@ -1,17 +1,15 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
-	"go-gin-crud/controllers"
+    "backend_golang/controllers"
+    "github.com/gin-gonic/gin"
 )
 
-func UserRoutes(router *gin.Engine) {
-	users := router.Group("/users")
-	{
-		users.GET("/", controllers.GetUsers)
-		users.GET("/:id", controllers.GetUserByID)
-		users.POST("/", controllers.CreateUser)
-		users.PUT("/:id", controllers.UpdateUser)
-		users.DELETE("/:id", controllers.DeleteUser)
-	}
+func RegisterRoutes(router *gin.Engine) {
+    api := router.Group("/api")
+    {
+        api.GET("/conceptos", controllers.GetConceptos)
+        api.GET("/ciudades", controllers.GetCiudades)
+        api.GET("/paises", controllers.GetPaises)
+    }
 }
