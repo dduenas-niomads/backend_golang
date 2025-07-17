@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 module backend_golang
 
 go 1.24.5
@@ -42,8 +41,3 @@ require (
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-=======
-module github.com/dduenas-niomads/backend_golang
-
-go 1.24.5
->>>>>>> 9358fd8 (recambios)

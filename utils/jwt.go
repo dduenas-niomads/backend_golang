@@ -5,7 +5,7 @@ import (
     "github.com/golang-jwt/jwt/v5"
 )
 
-var jwtKey = []byte("tu_clave_secreta") // Usa una clave segura y guárdala en .env
+var jwtKey = []byte("eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTc1MjczNjE5NiwiaWF0IjoxNzUyNzM2MTk2fQ.PTTMlrwBWnYwcws5Uu8t0IWwQM2o9lAH2DJUT3GY4-I") // Usa una clave segura y guárdala en .env
 
 func GenerateJWT(userID uint) (string, error) {
     claims := jwt.MapClaims{

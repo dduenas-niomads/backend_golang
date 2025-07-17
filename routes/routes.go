@@ -33,12 +33,14 @@ func SetupRoutes(r *gin.Engine) {
 		// Users
 		users := api.Group("/users")
 		{
-			users.GET("/", middleware.JWTAuth(), controllers.GetUsers)
-			users.GET("/:id", middleware.JWTAuth(), controllers.GetUserByID)
-			users.POST("/", controllers.CreateUser)
-			users.PUT("/:id", middleware.JWTAuth(), controllers.UpdateUser)
-			users.DELETE("/:id", middleware.JWTAuth(), controllers.DeleteUser)
 			users.POST("/register", controllers.Register)
 			users.POST("/login", controllers.Login)
+
+			users.GET("/", middleware.JWTAuth(), controllers.GetUsers)
+			users.GET("/:id", middleware.JWTAuth(), controllers.GetUserByID)
+			users.POST("/", middleware.JWTAuth(), controllers.CreateUser)
+			users.PUT("/:id", middleware.JWTAuth(), controllers.UpdateUser)
+			users.DELETE("/:id", middleware.JWTAuth(), controllers.DeleteUser)
 		}
 	}
+}

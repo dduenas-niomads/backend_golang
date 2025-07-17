@@ -1,5 +1,4 @@
 package models
-<<<<<<< HEAD
 
 type Country struct {
     ID      uint   `json:"id" gorm:"primaryKey"`
@@ -7,5 +6,3 @@ type Country struct {
     ISOCode string `json:"iso_code"`
     Flag    string `json:"flag"`
 }
-=======
->>>>>>> 9358fd8 (recambios)
