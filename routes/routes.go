@@ -42,4 +42,3 @@ func SetupRoutes(r *gin.Engine) {
 			users.POST("/login", controllers.Login)
 		}
 	}
-}
