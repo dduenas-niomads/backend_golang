@@ -189,7 +189,8 @@
           e.preventDefault();
           const name = document.getElementById('countryName').value;
           const iso_code = document.getElementById('countryISO').value;
-          const flag = document.getElementById('countryFlag').value;
+          const flag = 'https://flagpedia.net/data/flags/w580/ec.png';   //VER
+          //document.getElementById('countryFlag').value;
           await fetch('http://localhost:8080/countries/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -232,7 +233,11 @@
               <td>${country.id}</td>
               <td>${country.name}</td>
               <td>${country.iso_code}</td>
-              <td>${country.flag}</td>
+              <td>${//VER
+                  flag.startsWith('http')
+                  ? `<img src="${flag}" alt="Bandera de ${country.name}" style="width:30px;height:auto;">`
+                  : flag
+                  }</td
               <td>
                 <button onclick="editCountry(${country.id}, '${country.name}', '${country.iso_code}', '${country.flag}')" class="create-btn">Editar</button>
                 <button onclick="deleteCountry(${country.id})" class="create-btn" style="background:#f8d7da;color:#a94442;">Eliminar</button>
