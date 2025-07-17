@@ -2,8 +2,8 @@
 package main
 
 import (
-    "go-gin-crud/config"
-    "go-gin-crud/models"
+    "backend_golang/config"
+    "backend_golang/models"
     
 )
 

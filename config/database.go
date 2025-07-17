@@ -1,16 +1,20 @@
 package config
 
 import (
+	// "os"
     "log"
     "gorm.io/driver/sqlite"
     "gorm.io/gorm"
-    "go-gin-crud/models"
+    "backend_golang/models"
 )
 
 var DB *gorm.DB
 
 func ConnectDatabase() {
-    database, err := gorm.Open(sqlite.Open("users.db"), &gorm.Config{})
+
+	dbURL := "data.db"
+
+    database, err := gorm.Open(sqlite.Open(dbURL), &gorm.Config{})
     if err != nil {
         log.Fatal("No se pudo conectar a la base de datos:", err)
     }

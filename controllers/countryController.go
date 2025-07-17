@@ -2,8 +2,8 @@ package controllers
 
 import (
     "net/http"
-    "go-gin-crud/config"
-    "go-gin-crud/models"
+    "backend_golang/config"
+    "backend_golang/models"
     "github.com/gin-gonic/gin"
 )
 

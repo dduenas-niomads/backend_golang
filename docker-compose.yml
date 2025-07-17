@@ -1,0 +1,17 @@
+
+services:
+  backend:
+    build: .
+    container_name: backend_golang_container
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./users.db:/root/users.db      # Monta la base de datos SQLite
+      - ./.env:/root/.env              # Monta el archivo .env para que el contenedor pueda leerlo
+      - ./:/app
+    environment:
+      - PORT=8080
+      - DATABASE_URL=/root/database/data.db   # Variable con ruta dentro del contenedor
+
+    restart: unless-stopped
+

@@ -1,28 +1,45 @@
 package routes
 
 import (
-    "github.com/gin-gonic/gin"
-    "go-gin-crud/controllers"
+	"backend_golang/controllers"
+	"backend_golang/middleware"
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(r *gin.Engine) {
-    r.GET("/countries/", controllers.GetCountries)
-    r.POST("/countries/", controllers.CreateCountry)
-    r.PUT("/countries/:id", controllers.UpdateCountry)
-    r.DELETE("/countries/:id", controllers.DeleteCountry)
+	api := r.Group("/api")
+	{
+		// Conceptos
+		api.GET("/conceptos", controllers.GetConceptos)
 
-    // Ciudades
-    r.GET("/cities/", controllers.GetCities)
-    r.POST("/cities/", controllers.CreateCity)
-    r.PUT("/cities/:id", controllers.UpdateCity)
-    r.DELETE("/cities/:id", controllers.DeleteCity)
+		// Countries
+		countries := api.Group("/countries")
+		{
+			countries.GET("/", controllers.GetCountries)
+			countries.POST("/", controllers.CreateCountry)
+			countries.PUT("/:id", controllers.UpdateCountry)
+			countries.DELETE("/:id", controllers.DeleteCountry)
+		}
 
-	// Usuarios
-    r.GET("/users/", controllers.GetUsers)
-    r.GET("/users/:id", controllers.GetUserByID)
-    r.POST("/users/", controllers.CreateUser)
-    r.PUT("/users/:id", controllers.UpdateUser)
-    r.DELETE("/users/:id", controllers.DeleteUser)
+		// Cities
+		cities := api.Group("/cities")
+		{
+			cities.GET("/", controllers.GetCities)
+			cities.POST("/", controllers.CreateCity)
+			cities.PUT("/:id", controllers.UpdateCity)
+			cities.DELETE("/:id", controllers.DeleteCity)
+		}
 
-	
+		// Users
+		users := api.Group("/users")
+		{
+			users.GET("/", middleware.JWTAuth(), controllers.GetUsers)
+			users.GET("/:id", middleware.JWTAuth(), controllers.GetUserByID)
+			users.POST("/", controllers.CreateUser)
+			users.PUT("/:id", middleware.JWTAuth(), controllers.UpdateUser)
+			users.DELETE("/:id", middleware.JWTAuth(), controllers.DeleteUser)
+			users.POST("/register", controllers.Register)
+			users.POST("/login", controllers.Login)
+		}
+	}
 }
