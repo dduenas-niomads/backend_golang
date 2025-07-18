@@ -1,4 +1,13 @@
-var Countries []models.Country
+package storage
+
+import (
+	"encoding/json"
+	"os"
+
+	"backend_golang/models"
+)
+
+var Countries []models.Country // ✅ Exportada si la primera letra es MAYÚSCULA
 
 func LoadCountriesFromFile() {
 	data, err := os.ReadFile("data/countries.json")

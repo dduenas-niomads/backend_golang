@@ -1,5 +1,4 @@
-// SeedCity.go
-package main
+package seeders
 
 import (
     "backend_golang/config"

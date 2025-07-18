@@ -2,7 +2,7 @@ package utils
 
 import (
     "time"
-    "github.com/golang-jwt/jwt/v5"
+    "github.com/golang-jwt/jwt/v4"
 )
 
 var jwtKey = []byte("eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTc1MjczNjE5NiwiaWF0IjoxNzUyNzM2MTk2fQ.PTTMlrwBWnYwcws5Uu8t0IWwQM2o9lAH2DJUT3GY4-I") // Usa una clave segura y guárdala en .env

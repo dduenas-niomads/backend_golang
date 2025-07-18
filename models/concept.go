@@ -1,10 +1,12 @@
 package models
 
-import "gorm.io/gorm"
+import "time"
 
 type Concept struct {
-	gorm.Model
-	Name        string `json:"name" binding:"required"`
-	Description string `json:"description"`
-	Url         string `json:"url" binding:"required,url"`
+    ID          uint      `gorm:"primaryKey"`
+    Name        string    `gorm:"unique"`
+    Description string
+    URL         string
+    CreatedAt   time.Time
+    UpdatedAt   time.Time
 }

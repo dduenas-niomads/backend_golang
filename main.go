@@ -1,4 +1,3 @@
-// main.go (No necesita cambios si ya lo tienes así)
 package main
 
 import (
@@ -10,6 +9,7 @@ import (
 
 	"backend_golang/config"
 	"backend_golang/routes"
+	"backend_golang/seeders"
 )
 
 func main() {
@@ -19,8 +19,11 @@ func main() {
 		log.Fatal("Error cargando archivo .env")
 	}
 
-	// Conectar a la base de datos
+	// Conectar a la base de datos (importante hacerlo antes de seeders)
 	config.ConnectDatabase()
+
+	// Ejecutar seeders UNA vez, después de la conexión a la base
+	seeders.SeedAll()
 
 	// Iniciar Gin
 	router := gin.Default()
@@ -28,13 +31,13 @@ func main() {
 	// Configurar rutas
 	routes.SetupRoutes(router)
 
-	// Puerto desde .env
+	// Obtener puerto desde .env o usar 8080 por defecto
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	// Iniciar servidor
+	// Iniciar servidor en el puerto definido
 	err = router.Run(":" + port)
 	if err != nil {
 		log.Fatal("No se pudo iniciar el servidor")
