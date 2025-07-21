@@ -19,7 +19,7 @@ func JWTAuth() gin.HandlerFunc {
             c.AbortWithStatusJSON(401, gin.H{"error": "Token inválido"})
             return
         }
-        c.Set("user_id", claims["user_id"])
+        c.Set("userID", claims["userID"])
         c.Next()
     }
 }

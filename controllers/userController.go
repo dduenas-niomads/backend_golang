@@ -85,6 +85,26 @@ func GetUsers(c *gin.Context) {
     c.JSON(200, safeUsers)
 }
 
+// Obtener datos del usuario autenticado
+func GetUserByToken(c *gin.Context) {
+    userID, exists := c.Get("userID")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
+        return
+    }
+
+    var user models.User
+    if err := config.DB.First(&user, userID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "id":    user.ID,
+        "email": user.Email,
+    })
+}
+
 // Obtener usuario por ID (requiere autenticación)
 func GetUserByID(c *gin.Context) {
     id := c.Param("id")

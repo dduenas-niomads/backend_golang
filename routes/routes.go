@@ -37,6 +37,7 @@ func SetupRoutes(r *gin.Engine) {
 			users.POST("/login", controllers.Login)
 
 			users.GET("/", middleware.JWTAuth(), controllers.GetUsers)
+			users.GET("/me", middleware.JWTAuth(), controllers.GetUserByToken)
 			users.GET("/:id", middleware.JWTAuth(), controllers.GetUserByID)
 			users.POST("/", middleware.JWTAuth(), controllers.CreateUser)
 			users.PUT("/:id", middleware.JWTAuth(), controllers.UpdateUser)

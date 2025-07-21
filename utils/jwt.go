@@ -9,7 +9,7 @@ var jwtKey = []byte("eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3
 
 func GenerateJWT(userID uint) (string, error) {
     claims := jwt.MapClaims{
-        "user_id": userID,
+        "userID": userID,
         "exp":     time.Now().Add(time.Hour * 72).Unix(),
     }
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
