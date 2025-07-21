@@ -1,12 +1,23 @@
 package routes
 
 import (
+  	"time"
+	"github.com/gin-contrib/cors"
 	"backend_golang/controllers"
 	"backend_golang/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(r *gin.Engine) {
+
+    // Configuración de CORS
+    r.Use(cors.New(cors.Config{
+		AllowAllOrigins: true, // Esto reemplaza AllowOrigins
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		MaxAge:           12 * time.Hour,
+	}))
+
 	api := r.Group("/api")
 	{
 		// Conceptos
