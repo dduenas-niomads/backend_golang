@@ -29,7 +29,7 @@ func Register(c *gin.Context) {
         return
     }
     token, _ := utils.GenerateJWT(input.ID)
-    c.JSON(200, gin.H{"token": token, "user": gin.H{"id": input.ID, "email": input.Email}})
+    c.JSON(200, gin.H{"token": token})
 }
 
 // Login
@@ -49,7 +49,7 @@ func Login(c *gin.Context) {
         return
     }
     token, _ := utils.GenerateJWT(user.ID)
-    c.JSON(200, gin.H{"token": token, "user": gin.H{"id": user.ID, "email": user.Email}})
+    c.JSON(200, gin.H{"token": token})
 }
 
 // CreateUser (hashea la contraseña si se envía)
