@@ -29,7 +29,15 @@ func Register(c *gin.Context) {
         return
     }
     token, _ := utils.GenerateJWT(input.ID)
-    c.JSON(200, gin.H{"token": token, "user": gin.H{"id": input.ID, "email": input.Email}})
+    c.JSON(200, gin.H{
+        "token": token,
+        "user": gin.H{
+            "id": input.ID,
+            "name": input.Name,
+            "last_name": input.LastName,
+            "email": input.Email,
+        },
+    })
 }
 
 // Login
@@ -68,7 +76,12 @@ func CreateUser(c *gin.Context) {
         user.Password = string(hashedPassword)
     }
     config.DB.Create(&user)
-    c.JSON(http.StatusCreated, gin.H{"id": user.ID, "email": user.Email})
+    c.JSON(http.StatusCreated, gin.H{
+        "id": user.ID,
+        "name": user.Name,
+        "last_name": user.LastName,
+        "email": user.Email,
+    })
 }
 // Obtener todos los usuarios (requiere autenticación)
 func GetUsers(c *gin.Context) {
@@ -87,20 +100,16 @@ func GetUsers(c *gin.Context) {
 
 // Obtener datos del usuario autenticado
 func GetUserByToken(c *gin.Context) {
-    userID, exists := c.Get("userID")
+    user, exists := c.Get("user")
     if !exists {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
+        c.JSON(401, gin.H{"error": "Unauthorized"})
         return
     }
-
-    var user models.User
-    if err := config.DB.First(&user, userID).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{
-        "id":    user.ID,
+    // Supón que user es tu modelo de usuario
+    c.JSON(200, gin.H{
+        "id": user.ID,
+        "name": user.Name,
+        "last_name": user.LastName,
         "email": user.Email,
     })
 }
