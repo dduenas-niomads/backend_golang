@@ -100,9 +100,15 @@ func GetUsers(c *gin.Context) {
 
 // Obtener datos del usuario autenticado
 func GetUserByToken(c *gin.Context) {
-    user, exists := c.Get("user")
+    userID, exists := c.Get("userID")
     if !exists {
-        c.JSON(401, gin.H{"error": "Unauthorized"})
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
+        return
+    }
+
+    var user models.User
+    if err := config.DB.First(&user, userID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
         return
     }
     // Supón que user es tu modelo de usuario
